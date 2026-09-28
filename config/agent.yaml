@@ -1,0 +1,45 @@
+# Agent Manifest — AgentRegistry entry point
+# This file is required for AgentRegistry auto-discovery (lazy-load architecture)
+
+id: "CMN-C2-686"
+name: "Resume Batch Screening & Classification"
+# Mirrors the value src/api/server.py passes to secrets_factory().
+namespace: "cmn-c2-686"
+enabled: true
+version: "0.1.0"
+category: "Cat 2"
+industry: "CMN"
+
+# Node-backbone pattern (L2 retired) — base agent type reference
+base_type: "ReActAgent"  # RAGAgent | ChatAgent | ReActAgent | DocGenerationAgent
+
+# Entry point
+class: "src.graph.graph.Graph"
+
+# Runtime configuration
+config:
+  max_retry: 3
+  timeout_seconds: 30
+  # AutonomousBaseGraph-required (L1 direct parent — see src/graph/graph.py):
+  budget_usd: 2.50      # hard cost ceiling per invocation; null = track only, no ceiling
+  max_iterations: 20    # think-act loop iteration ceiling
+
+# LLM provider requirement (AutonomousBaseGraph requires an llm client wired
+# into config -- see src/api/server.py). AnthropicLLMClient is the documented
+# production class; it needs the
+# `anthropic` extra (langchain_anthropic), which this repo's CI does not
+# currently install (framework/CI gap, tracked separately -- not this
+# template's bug to fix). server.py falls back to a deterministic stub LLM
+# when the import is unavailable, so Stage 5 STG smoke still exercises real
+# graph wiring without a live Anthropic call.
+requires:
+  extras: [anthropic]
+  secrets: [ANTHROPIC_API_KEY]
+
+# Security
+required_trust_level: "INTERNAL"
+
+# Dependencies the agent requires (registry compile-time validation).
+requires:
+  extras: []
+  secrets: []

@@ -1,0 +1,38 @@
+[project]
+name = "cmn-c2-686"
+version = "0.1.0"
+description = "ResumeScreeningClassificationAgent — Resume Batch Screening & Classification — AgentCore Template"
+requires-python = ">=3.11"
+dependencies = [
+    "agenticstar-agentcore[marketplace,openai]==1.0.3",]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.0.3",
+    "pytest-cov==5.0.0",
+    "pytest-asyncio==1.4.0",
+    "ruff==0.4.4",
+    "mypy==1.10.0",
+]
+
+[build-system]
+requires = ["setuptools==68.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+# Resolves against the module BEING CHECKED, not the base class's module, so it
+# cannot be scoped into an override -- every node subclassing the untyped framework
+# would trip it otherwise.
+disallow_subclassing_any = false
+
+[[tool.mypy.overrides]]
+# This one resolves against the IMPORTED module, so scoping it here does work.
+module = ["framework.*", "shared.*"]
+ignore_missing_imports = true
+
